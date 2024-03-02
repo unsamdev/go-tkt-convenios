@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/fvk113/go-tkt-convenios/util"
+	"github.com/unsamdev/go-tkt-convenios/util"
 	"net/http"
 	"reflect"
 )
