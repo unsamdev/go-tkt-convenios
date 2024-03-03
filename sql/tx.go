@@ -82,6 +82,22 @@ func (o *TxCtx) UpdateEntity(schema string, entity interface{}) int64 {
 	return o.ExecStructStmt(stmt, entity, 0)
 }
 
+func (o *TxCtx) UpdateEntityCustomId(schema string, idName string, entity interface{}) int64 {
+	objectType := reflect.TypeOf(entity)
+	name := objectType.Name()
+	key := schema + "." + name
+	stmt, ok := o.updMap[key]
+	if !ok {
+		sentence := "update " + schema + "." + objectType.Name() + " set " + ForUpdate(entity, 1, 2) +
+			" where " + idName + " = $1"
+		var err error
+		stmt, err = o.tx.Prepare(sentence)
+		util.CheckErr(err)
+		o.updMap[key] = stmt
+	}
+	return o.ExecStructStmt(stmt, entity, 0)
+}
+
 func (o *TxCtx) resolveIdName(objectType reflect.Type) string {
 	idField, ok := objectType.FieldByName("Id")
 	if !ok {
